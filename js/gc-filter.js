@@ -1,8 +1,8 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-04-28, jsommer
- version: 0.6
+ last update: 2020-04-29, jsommer
+ version: 0.6.1
 */
 "use strict";
 
@@ -32,40 +32,56 @@ Vue.component('gc-filter', {
     gcLayout: {
       type: String,
       default: 'vertical' // or horizontal
-    }
+    },
+    gcAvailableFields: {
+      type: String,
+      default: 'crop,name,entity,promotion'
+    },
+    gcAvailableOptions: {
+      type: String,
+      default: 'optionsTitle'
+    },
+    gcOptionsCollapsed: {
+      type: String,
+      default: 'true' // or false
+    },
   },
   template: `<div :id="this.filterid" class="is-inline">
 
-                <p class="is-size-5 has-text-weight-bold is-orange" v-on:click="toggleFilter" style="cursor: pointer; margin-bottom: 1em;">
-                    <i class="fas fa-filter fa-sm"></i> Filter parcels <i class="fas fa-angle-down fa-sm"></i>
+                <p class="gc-options-title is-size-6 has-text-weight-bold is-orange" 
+                  style="cursor: pointer; margin-bottom: 1em;"    
+                  v-on:click="toggleFilter" 
+                  v-show="availableOptions.includes('optionsTitle')">
+                    <!--i class="fas fa-filter fa-sm"></i --> Filter parcels 
+                    <i :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
                 </p>
 
                 <!-- filter container -->
-                <div class="" style="width: 100%;">
+                <div :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-hidden']" style="width: 100%;">
                   <div :id="this.filterid + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
-                    <div class="field is-horizontal gc-filter-field">
-                    <div class="field-label is-small has-text-left"><label class="label is-grey">Crop</label></div>
-                    <div class="field-body">
+                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('crop')">
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">Crop</label></div>
+                      <div class="field-body">
                         <input type="text" class="input is-small" placeholder="[crop]" v-model="crop">
+                      </div>
                     </div>
-                    </div>
-                    <div class="field is-horizontal gc-filter-field">
-                        <div class="field-label is-small has-text-left"><label class="label is-grey">Entity</label></div>
-                        <div class="field-body">
+                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('entity')">
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">Entity</label></div>
+                      <div class="field-body">
                         <input type="text" class="input is-small" placeholder="[entity]" v-model="entity">
-                        </div>
+                      </div>
                     </div>
-                    <div class="field is-horizontal gc-filter-field">
-                        <div class="field-label is-small has-text-left"><label class="label is-grey">Name</label></div>
-                        <div class="field-body">
+                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('name')">
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">Name</label></div>
+                      <div class="field-body">
                         <input type="text" class="input is-small" placeholder="[name]" v-model="name">
-                        </div>
+                      </div>
                     </div>
-                    <div class="field is-horizontal gc-filter-field">
-                        <div class="field-label is-small has-text-left"><label class="label is-grey">Promotion</label></div>
-                        <div class="field-body">
+                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('promotion')">
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">Promotion</label></div>
+                      <div class="field-body">
                         <input type="checkbox" class="content" v-model="promotion">
-                        </div>
+                      </div>
                     </div>
                     <div class="gc-filter-field">
                         <button :id="this.filterid + '_btnApplyFilter'" class="button is-small is-light is-orange" v-on:click="applyFilter">
@@ -76,7 +92,7 @@ Vue.component('gc-filter', {
                         </button>
                     </div>
                   </div>  
-                </div> <!-- filter container -->
+                </div> <!-- filter container -->              
 
                 <!-- pagination -->
                 <!-- div class="field is-centered" style="padding-top: 10px;">
@@ -123,6 +139,8 @@ Vue.component('gc-filter', {
         crop: "",
         entity: "",
         name: "",
+        currentParcel: undefined,
+        selectedParcelId: -1,
         layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }}
     }
   },
@@ -195,6 +213,16 @@ Vue.component('gc-filter', {
         this.$root.$emit('offsetChange', newValue);
       }
     },
+    availableFields: {
+      get: function () {
+        return this.gcAvailableFields.split(",");
+      }
+    },
+    availableOptions: {
+      get: function() {
+        return (this.gcAvailableOptions.split(","));
+      }
+    },
   },
   watch: {
       parcelIds: function(newValue, oldValue) {
@@ -207,6 +235,9 @@ Vue.component('gc-filter', {
         //console.debug(newValue);
 
         this.$root.$emit('parcelsChange', newValue);
+
+        // set first parcel as current parcel
+        this.currentParcel = this.parcels[0];
         
       },
       filterString: function(newValue, oldValue) {
@@ -222,6 +253,9 @@ Vue.component('gc-filter', {
 
         // trigger per change of filter to other listening components
         this.applyFilter();
+      },
+      selectedParcelId: function (newValue, oldValue) {
+        this.$root.$emit('selectedParcelIdChange', newValue);
       },
   },
   methods: {
@@ -318,14 +352,13 @@ Vue.component('gc-filter', {
         xmlHttp.send();
     },
     toggleFilter: function () {
-        
+      this.gcOptionsCollapsed = !JSON.parse(this.gcOptionsCollapsed) + "";
     },
     applyFilter: function () {
 
+        console.debug("applyFilter()");
         document.getElementById(this.filterid + "_btnApplyFilter").classList.add("is-active");
-
-        console.debug();
-        
+       
         this.getParcelTotalCount(this.filterString);
 
         // update the paging & data
