@@ -1,3 +1,18 @@
 .gc-filter-field {
     padding: 0.25em;
 }
+.gc-parcel-field {
+    padding: 0.5em;
+}
+.gc-options-title > i {
+    transform: rotate(0deg);
+    transition: all 0.15s ease-in;
+}
+.gc-options-title:hover {
+    color:#ff9800  !important;
+}
+.gc-options-title > i.is-active {
+    color: #9D9D9C !important;
+    transform: rotate(180deg);
+    transition: all 0.15s ease-in;
+}
