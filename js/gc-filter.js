@@ -1,10 +1,48 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-04-29, jsommer
- version: 0.6.1
+ last update: 2020-05-13, jsommer
+ version: 0.6.2
 */
 "use strict";
+
+//language strings
+const gcFilterLocales = {
+  "en": {
+    "options": { "title": "Filter" },
+    "fields": { 
+      "crop": "Crop",
+      "entity": "Entity",
+      "name": "Name",
+      "promotion": "Promotion"
+    },
+    "buttons": { 
+      "applyFilter": {
+        "title": "Apply Filter"
+      }, 
+      "removeFilter": {
+        "title": "Remove Filter"
+      }
+    }
+  },
+  "de": {
+    "options": { "title": "Filter" },
+    "fields": { 
+      "crop": "Fruchtart",
+      "entity": "Entität",
+      "name": "Name",
+      "promotion": "Demo"
+    },
+    "buttons": { 
+      "applyFilter": {
+        "title": "Filter anwenden"
+      }, 
+      "removeFilter": {
+        "title": "Filter entfernen"
+      }
+    }
+  },
+}
 
 Vue.component('gc-filter', {
   props: {
@@ -45,14 +83,18 @@ Vue.component('gc-filter', {
       type: String,
       default: 'true' // or false
     },
+    gcLanguage: {
+      type: String,
+      default: 'de' // 'en' | 'de' | 'lt'
+    }
   },
   template: `<div :id="this.filterid" class="is-inline">
 
-                <p class="gc-options-title is-size-6 has-text-weight-bold is-orange" 
+                <p class="gc-options-title is-size-6 is-inline-block has-text-weight-bold is-orange" 
                   style="cursor: pointer; margin-bottom: 1em;"    
                   v-on:click="toggleFilter" 
                   v-show="availableOptions.includes('optionsTitle')">
-                    <!--i class="fas fa-filter fa-sm"></i --> Filter parcels 
+                    <!--i class="fas fa-filter fa-sm"></i --> {{ $t('options.title')}}
                     <i :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
                 </p>
 
@@ -60,35 +102,35 @@ Vue.component('gc-filter', {
                 <div :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-hidden']" style="width: 100%;">
                   <div :id="this.filterid + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('crop')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">Crop</label></div>
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.crop')}}</label></div>
                       <div class="field-body">
-                        <input type="text" class="input is-small" placeholder="[crop]" v-model="crop">
+                        <input type="text" class="input is-small" :placeholder="$t('fields.crop')" v-model="crop">
                       </div>
                     </div>
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('entity')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">Entity</label></div>
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.entity')}}</label></div>
                       <div class="field-body">
-                        <input type="text" class="input is-small" placeholder="[entity]" v-model="entity">
+                        <input type="text" class="input is-small" :placeholder="$t('fields.entity')" v-model="entity">
                       </div>
                     </div>
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('name')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">Name</label></div>
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.name')}}</label></div>
                       <div class="field-body">
-                        <input type="text" class="input is-small" placeholder="[name]" v-model="name">
+                        <input type="text" class="input is-small" :placeholder="$t('fields.name')" v-model="name">
                       </div>
                     </div>
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('promotion')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">Promotion</label></div>
+                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.promotion')}}</label></div>
                       <div class="field-body">
                         <input type="checkbox" class="content" v-model="promotion">
                       </div>
                     </div>
                     <div class="gc-filter-field">
                         <button :id="this.filterid + '_btnApplyFilter'" class="button is-small is-light is-orange" v-on:click="applyFilter">
-                            <i class="fas fa-filter fa-sm"></i><span class="content">Apply Filter</span>
+                            <i class="fas fa-filter fa-sm"></i><span class="content">{{$t('buttons.applyFilter.title')}}</span>
                         </button>
                         <button :id="this.filterid + '_btnRemoveFilter'" class="button is-small is-light is-orange" v-on:click="removeFilter">
-                            <i class="fas fa-times-circle fa-sm"></i><span class="content">Remove Filter</span>
+                            <i class="fas fa-times-circle fa-sm"></i><span class="content">{{$t('buttons.removeFilter.title')}}</span>
                         </button>
                     </div>
                   </div>  
@@ -144,8 +186,14 @@ Vue.component('gc-filter', {
         layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }}
     }
   },
+  //init internationalization
+  i18n: {
+    locale: this.currentLanguage,
+    messages: gcFilterLocales
+  },
   created: function () {
-    console.debug("filter! - created()");
+    console.debug("gc-filter - created()");
+    this.changeLanguage();
   },
   /* when vue component is mounted (ready) on DOM node */
   mounted: function () {
@@ -223,6 +271,12 @@ Vue.component('gc-filter', {
         return (this.gcAvailableOptions.split(","));
       }
     },
+    currentLanguage: {
+      get: function() {
+        // will always reflect prop's value 
+        return this.gcLanguage;
+      },
+    }
   },
   watch: {
       parcelIds: function(newValue, oldValue) {
@@ -257,6 +311,9 @@ Vue.component('gc-filter', {
       selectedParcelId: function (newValue, oldValue) {
         this.$root.$emit('selectedParcelIdChange', newValue);
       },
+      currentLanguage(newValue, oldValue) {
+        this.changeLanguage();
+      }
   },
   methods: {
     getParcelTotalCount: function (filterString) {
@@ -429,5 +486,8 @@ Vue.component('gc-filter', {
       }
       return Math.ceil(decimal * factor) / factor;
     },
+    changeLanguage() {
+      this.$i18n.locale = this.currentLanguage;
+    }
   }
 });
