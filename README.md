@@ -22,9 +22,12 @@ As there are defaults you will only have to set an attribute to change the defau
 ## Integration
 For the integration of the widget you'll have to follow these steps.
 
-You have to add some dependencies in the head tag of the container website. Make sure to use an unique identifier for each component. 
->Please ensure, that you load Vue.js (v.2.6.x) before loading the gc-filter component first!
+You have to add some dependencies in the head tag of the container website. 
+>Please ensure, that you load Vue.js (v.2.6.x) before loading the component first!
 Also note that <a href="www.bulma.org">bulma.css</a> and <a href="www.fontawesome.org">Font awesome</a> wll be loaded through gc-filter.css.
+
+> **Embedded mode:** This widget expects a root Vue instance which controls it. It is is designed not be embedded by another Vue application, so there is no init script which loads dependent libraries and the root Vue instance. __You'll have to load at least Vue create the root Vue instance which controls the child by yourself.__ 
+
 
 ```html
 <html>
