@@ -90,7 +90,7 @@ Vue.component('gc-filter', {
   },
   template: `<div :id="this.filterid" class="is-inline">
 
-                <p class="gc-options-title is-size-6 is-inline-block has-text-weight-bold is-orange" 
+                <p class="gc-options-title is-size-6 is-inline-block is-orange" 
                   style="cursor: pointer; margin-bottom: 1em;"    
                   v-on:click="toggleFilter" 
                   v-show="availableOptions.includes('widgetTitle')">
