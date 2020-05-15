@@ -46,7 +46,7 @@ const gcFilterLocales = {
 
 Vue.component('gc-filter', {
   props: {
-    filterid: {
+    gcWidgetId: {
       type: String,
       default: 'filter1',
       required: true
@@ -88,7 +88,7 @@ Vue.component('gc-filter', {
       default: 'en' // 'en' | 'de' | 'lt'
     }
   },
-  template: `<div :id="this.filterid" class="is-inline">
+  template: `<div :id="this.gcWidgetId" class="is-inline">
 
                 <p class="gc-options-title is-size-6 is-inline-block is-orange" 
                   style="cursor: pointer; margin-bottom: 1em;"    
@@ -100,7 +100,7 @@ Vue.component('gc-filter', {
 
                 <!-- filter container -->
                 <div :class="[JSON.parse(gcWidgetCollapsed) ? '': 'is-hidden']" style="width: 100%;">
-                  <div :id="this.filterid + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
+                  <div :id="this.gcWidgetId + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('crop')">
                       <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.crop')}}</label></div>
                       <div class="field-body">
@@ -126,10 +126,10 @@ Vue.component('gc-filter', {
                       </div>
                     </div>
                     <div class="gc-filter-field">
-                        <button :id="this.filterid + '_btnApplyFilter'" class="button is-small is-light is-orange" v-on:click="applyFilter">
+                        <button :id="this.gcWidgetId + '_btnApplyFilter'" class="button is-small is-light is-orange" v-on:click="applyFilter">
                             <i class="fas fa-filter fa-sm"></i><span class="content">{{$t('buttons.applyFilter.title')}}</span>
                         </button>
-                        <button :id="this.filterid + '_btnRemoveFilter'" class="button is-small is-light is-orange" v-on:click="removeFilter">
+                        <button :id="this.gcWidgetId + '_btnRemoveFilter'" class="button is-small is-light is-orange" v-on:click="removeFilter">
                             <i class="fas fa-times-circle fa-sm"></i><span class="content">{{$t('buttons.removeFilter.title')}}</span>
                         </button>
                     </div>
@@ -170,7 +170,7 @@ Vue.component('gc-filter', {
                 </nav>
               </div -->  <!-- pagination -->
 
-            </div><!-- filterid -->`,
+            </div><!-- gcWidgetId -->`,
   data: function () {
     console.debug("filter! - data()");
     return {
@@ -414,7 +414,7 @@ Vue.component('gc-filter', {
     applyFilter: function () {
 
         console.debug("applyFilter()");
-        document.getElementById(this.filterid + "_btnApplyFilter").classList.add("is-active");
+        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.add("is-active");
        
         this.getParcelTotalCount(this.filterString);
 
@@ -433,7 +433,7 @@ Vue.component('gc-filter', {
 
         this.applyFilter();
 
-        document.getElementById(this.filterid + "_btnApplyFilter").classList.remove("is-active");
+        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.remove("is-active");
     },
     setParcelPageOffset: function(offset) {
 

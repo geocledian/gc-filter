@@ -49,7 +49,8 @@ Then you may create the widget(s) with custom HTML tags anywhere in the body sec
 ```html
 <div id="gc-app">
 
-    <gc-filter filterid="filter1"
+    <gc-filter 
+      gc-widget-id="filter1"
       gc-apikey="SOME_API_KEY" 
       gc-layout="horizontal">
     </gc-filter>
