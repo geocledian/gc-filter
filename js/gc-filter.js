@@ -1,8 +1,8 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-05-13, jsommer
- version: 0.6.2
+ last update: 2020-05-15, jsommer
+ version: 0.6.3
 */
 "use strict";
 
@@ -77,15 +77,15 @@ Vue.component('gc-filter', {
     },
     gcAvailableOptions: {
       type: String,
-      default: 'optionsTitle'
+      default: 'widgetTitle'
     },
-    gcOptionsCollapsed: {
+    gcWidgetCollapsed: {
       type: String,
       default: 'true' // or false
     },
     gcLanguage: {
       type: String,
-      default: 'de' // 'en' | 'de' | 'lt'
+      default: 'en' // 'en' | 'de' | 'lt'
     }
   },
   template: `<div :id="this.filterid" class="is-inline">
@@ -93,13 +93,13 @@ Vue.component('gc-filter', {
                 <p class="gc-options-title is-size-6 is-inline-block has-text-weight-bold is-orange" 
                   style="cursor: pointer; margin-bottom: 1em;"    
                   v-on:click="toggleFilter" 
-                  v-show="availableOptions.includes('optionsTitle')">
+                  v-show="availableOptions.includes('widgetTitle')">
                     <!--i class="fas fa-filter fa-sm"></i --> {{ $t('options.title')}}
-                    <i :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
+                    <i :class="[JSON.parse(gcWidgetCollapsed) ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
                 </p>
 
                 <!-- filter container -->
-                <div :class="[JSON.parse(gcOptionsCollapsed) ? '': 'is-hidden']" style="width: 100%;">
+                <div :class="[JSON.parse(gcWidgetCollapsed) ? '': 'is-hidden']" style="width: 100%;">
                   <div :id="this.filterid + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
                     <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('crop')">
                       <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.crop')}}</label></div>
@@ -409,7 +409,7 @@ Vue.component('gc-filter', {
         xmlHttp.send();
     },
     toggleFilter: function () {
-      this.gcOptionsCollapsed = !JSON.parse(this.gcOptionsCollapsed) + "";
+      this.gcWidgetCollapsed = !JSON.parse(this.gcWidgetCollapsed) + "";
     },
     applyFilter: function () {
 
