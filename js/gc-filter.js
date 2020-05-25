@@ -1,8 +1,8 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-05-15, jsommer
- version: 0.6.3
+ last update: 2020-05-25, jsommer
+ version: 0.6.4
 */
 "use strict";
 
@@ -58,7 +58,19 @@ Vue.component('gc-filter', {
     gcHost: {
         type: String,
         default: 'geocledian.com'
-    },   
+    },
+    gcProxy: {
+      type: String,
+      default: undefined
+    },
+    gcApiBaseUrl: {
+      type: String,
+      default: "/agknow/api/v3"
+    },
+    gcApiSecure: {
+      type: Boolean,
+      default: true
+    },      
     gcLimit: {
       type: Number,
       default: 250
@@ -86,7 +98,7 @@ Vue.component('gc-filter', {
     gcLanguage: {
       type: String,
       default: 'en' // 'en' | 'de' | 'lt'
-    }
+    },
   },
   template: `<div :id="this.gcWidgetId" class="is-inline">
 
@@ -183,7 +195,8 @@ Vue.component('gc-filter', {
         name: "",
         currentParcel: undefined,
         selectedParcelId: -1,
-        layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }}
+        layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }},
+        apiSecure: true,
     }
   },
   //init internationalization
@@ -214,10 +227,15 @@ Vue.component('gc-filter', {
             return this.gcHost;
         }
     },
-    apiUrl: {
+    apiBaseUrl: {
         get: function () {
-            return "https://" + this.gcHost + "/agknow/api/v3";
-        }
+            return this.gcApiBaseUrl;
+      }
+    },
+    apiSecure: {
+      get: function () {
+          return this.gcApiSecure;
+      }
     },
     filterString: {
         get: function () {
@@ -316,24 +334,44 @@ Vue.component('gc-filter', {
       }
   },
   methods: {
+    getApiUrl: function (endpoint) {
+      /* handles requests directly against  geocledian endpoints with API keys
+          or (if gcProxy is set)
+        also requests against the URL of gcProxy prop without API-Key; then
+        the proxy or that URL has to add the api key to the requests against geocledian endpoints
+      */
+      let protocol = 'http';
+
+      if (this.apiSecure) {
+        protocol += 's';
+      }
+
+      // if (this.apiEncodeParams) {
+      //   endpoint = encodeURIComponent(endpoint);
+      // }
+      
+      // with or without apikey depending on gcProxy property
+      return (this.gcProxy ? 
+                protocol + '://' + this.gcProxy + this.apiBaseUrl + endpoint  : 
+                protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key="+this.apiKey);
+    },
     getParcelTotalCount: function (filterString) {
 
+      const endpoint = "/parcels";
       let params;
 
       if (filterString) {
-        params = "/parcels?key=" + this.apiKey +
-          filterString +
-          "&count=True";
+        params = filterString +
+                  "&count=True";
       } else {
-        params = "/parcels?key=" + this.apiKey +
-          "&count=True";
+        params = "&count=True";
       }
       let xmlHttp = new XMLHttpRequest();
       let async = true;
 
       //Show requests on the DEBUG console for developers
       console.debug("getParcelTotalCount()");
-      console.debug("GET " + this.apiUrl + params);
+      console.debug("GET " + this.getApiUrl(endpoint) + params);
 
       xmlHttp.onreadystatechange = function () {
         if (xmlHttp.readyState == 4) {
@@ -360,7 +398,7 @@ Vue.component('gc-filter', {
           }
         }
       }.bind(this);
-      xmlHttp.open("GET", this.apiUrl + params, async);
+      xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
       xmlHttp.send();
     },
     getAllParcels: function (offset, filterString) {
@@ -368,7 +406,8 @@ Vue.component('gc-filter', {
         //download in chunks of n parcels
         let limit = this.pagingStep;
 
-        let params = "/parcels?key=" + this.apiKey + "&limit=" + limit; //set limit to maximum (default 1000)
+        const endpoint = "/parcels";
+        let params = "&limit=" + limit; //set limit to maximum (default 1000)
 
         if (offset) {
             params = params + "&offset=" + offset;
@@ -382,7 +421,7 @@ Vue.component('gc-filter', {
 
         //Show requests on the DEBUG console for developers
         console.debug("getAllParcels()");
-        console.debug("GET " + this.apiUrl + params);
+        console.debug("GET " + this.getApiUrl(endpoint) + params);
 
         xmlHttp.onreadystatechange = function () {
           if (xmlHttp.readyState == 4) {
@@ -405,7 +444,7 @@ Vue.component('gc-filter', {
               }
           }
         }.bind(this);
-        xmlHttp.open("GET", this.apiUrl + params, async);
+        xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
         xmlHttp.send();
     },
     toggleFilter: function () {
