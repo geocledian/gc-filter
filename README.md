@@ -1,6 +1,6 @@
 # gc-filter widget
 ## Description
-gc-filter is an JavaScript/HTML app for visualizing the outputs of the ag|knowledge REST API from [geocledian](https://www.geocledian.com).
+gc-filter is an JavaScript/HTML widget for filtering the ag|knowledge REST API from [geocledian](https://www.geocledian.com).
 It is built as a reusable [Vue.js](https://www.vuejs.org) component which allows the integration in [Vue.js](https://www.vuejs.org) applications smoothly. 
 You may but you don't have to build the rest of the container application with [Vue.js](https://www.vuejs.org).
 
