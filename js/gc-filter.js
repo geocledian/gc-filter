@@ -92,58 +92,60 @@ Vue.component('gc-filter', {
       default: 'widgetTitle'
     },
     gcWidgetCollapsed: {
-      type: String,
-      default: 'true' // or false
+      type: Boolean,
+      default: true // or false
     },
     gcLanguage: {
       type: String,
       default: 'en' // 'en' | 'de' | 'lt'
     },
   },
-  template: `<div :id="this.gcWidgetId" class="is-inline">
+  template: `<div :id="this.gcWidgetId" class="is-inline gc-filter">
 
                 <p class="gc-options-title is-size-6 is-inline-block is-orange" 
                   style="cursor: pointer; margin-bottom: 1em;"    
                   v-on:click="toggleFilter" 
                   v-show="availableOptions.includes('widgetTitle')">
-                    <!--i class="fas fa-filter fa-sm"></i --> {{ $t('options.title')}}
-                    <i :class="[JSON.parse(gcWidgetCollapsed) ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
+                    <!--i class="fas fa-filter fa-sm"></i --> {{ $t('options.title') }}
+                    <i :class="[gcWidgetCollapsed ? '': 'is-active', 'fas', 'fa-angle-down', 'fa-sm']"></i>
                 </p>
 
                 <!-- filter container -->
-                <div :class="[JSON.parse(gcWidgetCollapsed) ? '': 'is-hidden']" style="width: 100%;">
+                <div :class="[gcWidgetCollapsed ? '': 'is-hidden']" style="width: 100%;">
                   <div :id="this.gcWidgetId + 'div'" :class="layoutCSSMap['alignment'][gcLayout]">
-                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('crop')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.crop')}}</label></div>
-                      <div class="field-body">
+                    <div class="gc-filter-field" v-show="availableFields.includes('crop')">
+                      <label class="label is-small is-grey">{{$t('fields.crop')}}</label>
+                      <div class="control">
                         <input type="text" class="input is-small" :placeholder="$t('fields.crop')" v-model="crop">
                       </div>
                     </div>
-                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('entity')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.entity')}}</label></div>
-                      <div class="field-body">
+                    <div class="gc-filter-field" v-show="availableFields.includes('entity')">
+                      <label class="label is-small is-grey">{{$t('fields.entity')}}</label>
+                      <div class="control">
                         <input type="text" class="input is-small" :placeholder="$t('fields.entity')" v-model="entity">
                       </div>
                     </div>
-                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('name')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.name')}}</label></div>
-                      <div class="field-body">
+                    <div class="gc-filter-field" v-show="availableFields.includes('name')">
+                      <label class="label is-small is-grey">{{$t('fields.name')}}</label>
+                      <div class="control">
                         <input type="text" class="input is-small" :placeholder="$t('fields.name')" v-model="name">
                       </div>
                     </div>
-                    <div class="field is-horizontal gc-filter-field" v-show="availableFields.includes('promotion')">
-                      <div class="field-label is-small has-text-left"><label class="label is-grey">{{$t('fields.promotion')}}</label></div>
-                      <div class="field-body">
+                    <div class="gc-filter-field" v-show="availableFields.includes('promotion')">
+                      <label class="label is-small is-grey">{{$t('fields.promotion')}}</label>
+                      <div class="control">
                         <input type="checkbox" class="content" v-model="promotion">
                       </div>
                     </div>
                     <div class="gc-filter-field">
+                      <div class="control" :style="gcLayout === 'vertical' ? 'padding-bottom: 1.2em;': 'margin-top: 1.2em;'">
                         <button :id="this.gcWidgetId + '_btnApplyFilter'" class="button is-small is-light is-orange" v-on:click="applyFilter">
                             <i class="fas fa-filter fa-sm"></i><span class="content">{{$t('buttons.applyFilter.title')}}</span>
                         </button>
                         <button :id="this.gcWidgetId + '_btnRemoveFilter'" class="button is-small is-light is-orange" v-on:click="removeFilter">
                             <i class="fas fa-times-circle fa-sm"></i><span class="content">{{$t('buttons.removeFilter.title')}}</span>
                         </button>
+                      </div>
                     </div>
                   </div>  
                 </div> <!-- filter container -->              
@@ -448,7 +450,7 @@ Vue.component('gc-filter', {
         xmlHttp.send();
     },
     toggleFilter: function () {
-      this.gcWidgetCollapsed = !JSON.parse(this.gcWidgetCollapsed) + "";
+      this.gcWidgetCollapsed = !this.gcWidgetCollapsed;
     },
     applyFilter: function () {
 
