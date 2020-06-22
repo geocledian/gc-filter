@@ -1,7 +1,7 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-06-21, Tarun
+ last update: 2020-06-22, Tarun
  version: 0.6.5
 */
 "use strict";
@@ -374,7 +374,6 @@ Vue.component('gc-filter', {
       console.debug("GET " + this.getApiUrl(endpoint) + params);
 
       // axios implemented start
-      let temp = this;
       axios({
         method: 'GET',
         url: this.getApiUrl(endpoint) + params,
@@ -383,25 +382,25 @@ Vue.component('gc-filter', {
           var result = response.data;
           if ("count" in result) {
 
-            temp.total_parcel_count = result.count;
+            this.total_parcel_count = result.count;
 
             // minimum of 250
-            if (temp.total_parcel_count < temp.pagingStep) {
-              temp.pagingStep = temp.total_parcel_count;
+            if (this.total_parcel_count < this.pagingStep) {
+              this.pagingStep = this.total_parcel_count;
             } /*else {
               this.pagingStep = 250;
             }*/
 
-            if (temp.total_parcel_count == 0) {
+            if (this.total_parcel_count == 0) {
               return;
 
             } else {
               // now get all parcels
-              temp.getAllParcels(temp.offset, filterString);
+              this.getAllParcels(this.offset, filterString);
             }
           }
         }
-      }).catch(err => {
+      }.bind(this)).catch(err => {
         console.log("err= " + err);
       })
       // axios implemented end
@@ -423,7 +422,6 @@ Vue.component('gc-filter', {
       }
 
       // axios implemented start
-      let temp = this;
       axios({
         method: 'GET',
         url: this.getApiUrl(endpoint) + params,
@@ -434,7 +432,7 @@ Vue.component('gc-filter', {
             return;
           }
 
-          temp.parcels = [];
+          this.parcels = [];
 
           if (result.content.length == 0) {
             //clear details and map
@@ -443,10 +441,10 @@ Vue.component('gc-filter', {
 
           for (var i = 0; i < result.content.length; i++) {
             var item = result.content[i];
-            temp.parcels.push(item);
+            this.parcels.push(item);
           }
         }
-      }).catch(err => {
+      }.bind(this)).catch(err => {
         console.log("err= " + err);
       })
       // axios implemented end
