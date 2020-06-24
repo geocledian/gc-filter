@@ -1,7 +1,7 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-05-25, jsommer
+ last update: 2020-05-25, Tarun
  version: 0.6.4
 */
 "use strict";
@@ -359,29 +359,30 @@ Vue.component('gc-filter', {
     },
     getParcelTotalCount: function (filterString) {
 
-      const endpoint = "/parcels";
+	  const endpoint = "/parcels";
       let params;
 
       if (filterString) {
         params = filterString +
-                  "&count=True";
+          "&count=True";
       } else {
         params = "&count=True";
       }
-      let xmlHttp = new XMLHttpRequest();
-      let async = true;
 
       //Show requests on the DEBUG console for developers
       console.debug("getParcelTotalCount()");
       console.debug("GET " + this.getApiUrl(endpoint) + params);
 
-      xmlHttp.onreadystatechange = function () {
-        if (xmlHttp.readyState == 4) {
-          var tmp = JSON.parse(xmlHttp.responseText);
+      // axios implemented start
+      axios({
+        method: 'GET',
+        url: this.getApiUrl(endpoint) + params,
+      }).then(function (response) {
+        if (response.status === 200) {
+          var result = response.data;
+          if ("count" in result) {
 
-          if ("count" in tmp) {
-
-            this.total_parcel_count = tmp.count;
+            this.total_parcel_count = result.count;
 
             // minimum of 250
             if (this.total_parcel_count < this.pagingStep) {
@@ -399,55 +400,53 @@ Vue.component('gc-filter', {
             }
           }
         }
-      }.bind(this);
-      xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
-      xmlHttp.send();
+      }.bind(this)).catch(err => {
+        console.log("err= " + err);
+      })
+      // axios implemented end
     },
     getAllParcels: function (offset, filterString) {
 
         //download in chunks of n parcels
-        let limit = this.pagingStep;
+      let limit = this.pagingStep;
 
-        const endpoint = "/parcels";
-        let params = "&limit=" + limit; //set limit to maximum (default 1000)
+      const endpoint = "/parcels";
+      let params = "&limit=" + limit; //set limit to maximum (default 1000)
 
-        if (offset) {
-            params = params + "&offset=" + offset;
-        }
-        if (filterString) {
-            params = params + filterString;
-        }
+      if (offset) {
+        params = params + "&offset=" + offset;
+      }
+      if (filterString) {
+        params = params + filterString;
+      }
 
-        let xmlHttp = new XMLHttpRequest();
-        let async = true;
-
-        //Show requests on the DEBUG console for developers
-        console.debug("getAllParcels()");
-        console.debug("GET " + this.getApiUrl(endpoint) + params);
-
-        xmlHttp.onreadystatechange = function () {
-          if (xmlHttp.readyState == 4) {
-              var tmp = JSON.parse(xmlHttp.responseText);
-
-              if (tmp.content == "key is not authorized") {
-                  return;
-              }
-
-              this.parcels = [];
-
-              if (tmp.content.length == 0) {
-                  //clear details and map
-                  return;
-              }
-
-              for (var i = 0; i < tmp.content.length; i++) {
-                  var item = tmp.content[i];
-                  this.parcels.push(item);
-              }
+      // axios implemented start
+      axios({
+        method: 'GET',
+        url: this.getApiUrl(endpoint) + params,
+      }).then(function (response) {
+        if (response.status === 200) {
+          var result = response.data;
+          if (result.content == "key is not authorized") {
+            return;
           }
-        }.bind(this);
-        xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
-        xmlHttp.send();
+
+          this.parcels = [];
+
+          if (result.content.length == 0) {
+            //clear details and map
+            return;
+          }
+
+          for (var i = 0; i < result.content.length; i++) {
+            var item = result.content[i];
+            this.parcels.push(item);
+          }
+        }
+      }.bind(this)).catch(err => {
+        console.log("err= " + err);
+      })
+      // axios implemented end
     },
     toggleFilter: function () {
       this.gcWidgetCollapsed = !this.gcWidgetCollapsed;

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <meta charset="utf-8">
+  
+  <title>GC Filter</title>
+  <!--font awesome v5.6.0 -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css">
+  <!-- bulma v0.6.2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.6.2/css/bulma.min.css">
+
+  <script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/vue-i18n@8.17.5/dist/vue-i18n.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+  
+  <!--GC map component begin -->
+
+  <!-- loads also dependent css files via @import -->
+  <link href="css/gc-filter.css" rel="stylesheet">
+  <!-- init script for components -->
+  <script type="text/javascript" src="js/gc-filter.min.js"></script>
+ 
+  <!--GC map component end -->
+
+  <style>
+    body {
+      font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+      line-height: 1.1em;
+      font-size: 0.9rem;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div id="gc-app" class="is-mobile columns section">
+    <div class="column">
+      <gc-filter gc-widget-id="filter1" 
+              gc-apikey="39553fb7-7f6f-4945-9b84-a4c8745bdbec" 
+              gc-host="geocledian.com"
+              gc-layout="horizontal">
+      </gc-filter>
+    </div>
+     
+  </div>
+
+</body>
+<script>
+  var gcLocales = { en: {}, de: {} };
+  var i18n = new VueI18n({
+    locale: 'en', // set locale
+    fallbackLocale: 'en',
+    messages: gcLocales, // set locale messages
+  })
+  /* when ready, init global vue root instance */
+  var vmRoot = new Vue({
+      el: "#gc-app",
+      i18n: i18n //root i18n
+  });
+</script>
+
+</html>
