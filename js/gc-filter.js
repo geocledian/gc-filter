@@ -1,8 +1,8 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-06-22, Tarun
- version: 0.6.5
+ last update: 2020-05-25, Tarun
+ version: 0.6.4
 */
 "use strict";
 
@@ -10,16 +10,16 @@
 const gcFilterLocales = {
   "en": {
     "options": { "title": "Filter" },
-    "fields": {
+    "fields": { 
       "crop": "Crop",
       "entity": "Entity",
       "name": "Name",
       "promotion": "Promotion"
     },
-    "buttons": {
+    "buttons": { 
       "applyFilter": {
         "title": "Apply Filter"
-      },
+      }, 
       "removeFilter": {
         "title": "Remove Filter"
       }
@@ -27,16 +27,16 @@ const gcFilterLocales = {
   },
   "de": {
     "options": { "title": "Filter" },
-    "fields": {
+    "fields": { 
       "crop": "Fruchtart",
       "entity": "Entität",
       "name": "Name",
       "promotion": "Demo"
     },
-    "buttons": {
+    "buttons": { 
       "applyFilter": {
         "title": "Filter anwenden"
-      },
+      }, 
       "removeFilter": {
         "title": "Filter entfernen"
       }
@@ -52,12 +52,12 @@ Vue.component('gc-filter', {
       required: true
     },
     gcApikey: {
-      type: String,
-      default: '39553fb7-7f6f-4945-9b84-a4c8745bdbec'
+        type: String,
+        default: '39553fb7-7f6f-4945-9b84-a4c8745bdbec'
     },
     gcHost: {
-      type: String,
-      default: 'geocledian.com'
+        type: String,
+        default: 'geocledian.com'
     },
     gcProxy: {
       type: String,
@@ -70,7 +70,7 @@ Vue.component('gc-filter', {
     gcApiSecure: {
       type: Boolean,
       default: true
-    },
+    },      
     gcLimit: {
       type: Number,
       default: 250
@@ -188,17 +188,17 @@ Vue.component('gc-filter', {
   data: function () {
     console.debug("filter! - data()");
     return {
-      parcels: [],
-      total_parcel_count: 0,
-      pagingStep: 250,
-      promotion: undefined,
-      crop: "",
-      entity: "",
-      name: "",
-      currentParcel: undefined,
-      selectedParcelId: -1,
-      layoutCSSMap: { "alignment": { "vertical": "is-inline-block", "horizontal": "is-flex" } },
-      apiSecure: true,
+        parcels: [],
+        total_parcel_count: 0,
+        pagingStep: 250,
+        promotion: undefined,
+        crop: "",
+        entity: "",
+        name: "",
+        currentParcel: undefined,
+        selectedParcelId: -1,
+        layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }},
+        apiSecure: true,
     }
   },
   //init internationalization
@@ -220,63 +220,63 @@ Vue.component('gc-filter', {
   },
   computed: {
     apiKey: {
-      get: function () {
-        return this.gcApikey;
-      }
+        get: function () {
+            return this.gcApikey;
+        }
     },
     apiHost: {
-      get: function () {
-        return this.gcHost;
-      }
+        get: function () {
+            return this.gcHost;
+        }
     },
     apiBaseUrl: {
-      get: function () {
-        return this.gcApiBaseUrl;
+        get: function () {
+            return this.gcApiBaseUrl;
       }
     },
     apiSecure: {
       get: function () {
-        return this.gcApiSecure;
+          return this.gcApiSecure;
       }
     },
     filterString: {
-      get: function () {
-        // TODO offset + limit + paging
-        let filterStr = "&crop=" + this.crop +
-          "&entity=" + this.entity +
-          "&name=" + this.name;
-        if (this.promotion) {
-          filterStr += "&promotion=" + JSON.parse(this.promotion);
+        get: function () {
+          // TODO offset + limit + paging
+            let filterStr = "&crop="+this.crop +
+                            "&entity="+ this.entity+
+                            "&name="+ this.name;
+            if (this.promotion) {
+                filterStr += "&promotion="+ JSON.parse(this.promotion);
+            }
+            return filterStr;
         }
-        return filterStr;
-      }
     },
     parcelIds: {
-      get: function () {
+      get: function () { 
         if (this.parcels.length > 0) {
-          return this.parcels.map(p => p.parcel_id);
+          return this.parcels.map(p => p.parcel_id); 
         }
         else {
-          return [];
+            return [];
         }
       },
     },
     limit: {
-      get: function () {
+      get: function() {
         // will always reflect prop's value 
         return this.gcLimit;
       },
-      set: function (newValue) {
+      set: function (newValue) {       
         //notify root - through props it will change this.gcLimit
         this.$root.$emit('limitChange', newValue);
       }
     },
     offset: {
-      get: function () {
+      get: function() {
         // will always reflect prop's value 
         return this.gcOffset;
       },
-      set: function (newValue) {
+      set: function (newValue) {       
         //notify root - through props it will change this.gcOffset
         this.$root.$emit('offsetChange', newValue);
       }
@@ -287,53 +287,53 @@ Vue.component('gc-filter', {
       }
     },
     availableOptions: {
-      get: function () {
+      get: function() {
         return (this.gcAvailableOptions.split(","));
       }
     },
     currentLanguage: {
-      get: function () {
+      get: function() {
         // will always reflect prop's value 
         return this.gcLanguage;
       },
     }
   },
   watch: {
-    parcelIds: function (newValue, oldValue) {
-      //propagate local parcel ids to root instance
-      //this.$root.selectedParcelIds = this.parcelIds;
-    },
-    parcels: function (newValue, oldValue) {
-      console.debug("parcels changed!");
-      //console.debug(oldValue);
-      //console.debug(newValue);
+      parcelIds: function(newValue, oldValue) {
+        //propagate local parcel ids to root instance
+        //this.$root.selectedParcelIds = this.parcelIds;
+      },
+      parcels: function(newValue, oldValue) {
+        console.debug("parcels changed!");
+        //console.debug(oldValue);
+        //console.debug(newValue);
 
-      this.$root.$emit('parcelsChange', newValue);
+        this.$root.$emit('parcelsChange', newValue);
 
-      // set first parcel as current parcel
-      this.currentParcel = this.parcels[0];
+        // set first parcel as current parcel
+        this.currentParcel = this.parcels[0];
+        
+      },
+      filterString: function(newValue, oldValue) {
+        console.debug("filterString changed!");
+        //console.debug(oldValue);
+        //console.debug(newValue);
+      },
+      offset: function (newValue, oldValue) {
 
-    },
-    filterString: function (newValue, oldValue) {
-      console.debug("filterString changed!");
-      //console.debug(oldValue);
-      //console.debug(newValue);
-    },
-    offset: function (newValue, oldValue) {
+        console.debug("event - offsetChange");
 
-      console.debug("event - offsetChange");
+        this.$root.$emit('offsetChange',this.offset);
 
-      this.$root.$emit('offsetChange', this.offset);
-
-      // trigger per change of filter to other listening components
-      this.applyFilter();
-    },
-    selectedParcelId: function (newValue, oldValue) {
-      this.$root.$emit('selectedParcelIdChange', newValue);
-    },
-    currentLanguage(newValue, oldValue) {
-      this.changeLanguage();
-    }
+        // trigger per change of filter to other listening components
+        this.applyFilter();
+      },
+      selectedParcelId: function (newValue, oldValue) {
+        this.$root.$emit('selectedParcelIdChange', newValue);
+      },
+      currentLanguage(newValue, oldValue) {
+        this.changeLanguage();
+      }
   },
   methods: {
     getApiUrl: function (endpoint) {
@@ -351,15 +351,15 @@ Vue.component('gc-filter', {
       // if (this.apiEncodeParams) {
       //   endpoint = encodeURIComponent(endpoint);
       // }
-
+      
       // with or without apikey depending on gcProxy property
-      return (this.gcProxy ?
-        protocol + '://' + this.gcProxy + this.apiBaseUrl + endpoint :
-        protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key=" + this.apiKey);
+      return (this.gcProxy ? 
+                protocol + '://' + this.gcProxy + this.apiBaseUrl + endpoint  : 
+                protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key="+this.apiKey);
     },
     getParcelTotalCount: function (filterString) {
 
-      const endpoint = "/parcels";
+	  const endpoint = "/parcels";
       let params;
 
       if (filterString) {
@@ -404,11 +404,10 @@ Vue.component('gc-filter', {
         console.log("err= " + err);
       })
       // axios implemented end
-
     },
     getAllParcels: function (offset, filterString) {
 
-      //download in chunks of n parcels
+        //download in chunks of n parcels
       let limit = this.pagingStep;
 
       const endpoint = "/parcels";
@@ -448,59 +447,57 @@ Vue.component('gc-filter', {
         console.log("err= " + err);
       })
       // axios implemented end
-
-
     },
     toggleFilter: function () {
       this.gcWidgetCollapsed = !this.gcWidgetCollapsed;
     },
     applyFilter: function () {
 
-      console.debug("applyFilter()");
-      document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.add("is-active");
+        console.debug("applyFilter()");
+        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.add("is-active");
+       
+        this.getParcelTotalCount(this.filterString);
 
-      this.getParcelTotalCount(this.filterString);
-
-      // update the paging & data
-      this.$root.$emit('filterStringChange', this.filterString);
+        // update the paging & data
+        this.$root.$emit('filterStringChange', this.filterString);
 
     },
     removeFilter: function () {
 
-      this.crop = "";
-      this.entity = "";
-      this.name = "";
-      this.promotion = undefined;
+        this.crop = "";
+        this.entity = "";
+        this.name = "";
+        this.promotion = undefined;
 
-      this.pagingStep = 250;
+        this.pagingStep = 250;
 
-      this.applyFilter();
+        this.applyFilter();
 
-      document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.remove("is-active");
+        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.remove("is-active");
     },
-    setParcelPageOffset: function (offset) {
+    setParcelPageOffset: function(offset) {
 
-      console.debug("setParcelPageOffset() - change: " + offset);
-      console.debug("setParcelPageOffset() - current val: " + this.offset);
+      console.debug("setParcelPageOffset() - change: "+ offset);
+      console.debug("setParcelPageOffset() - current val: "+this.offset);
 
       let newOffset = this.offset + offset;
       if (newOffset >= 0) {
-        console.debug("new offset: " + newOffset);
-
-        if (newOffset <= this.total_parcel_count) {
-          console.debug("setting offset");
-          this.offset += offset;
-        }
-        else {
-          console.debug("total_parcel_count reached!")
-          console.debug("total: " + this.total_parcel_count);
-          console.debug("offset: " + this.offset);
-        }
+          console.debug("new offset: "+ newOffset);
+          
+          if (newOffset <= this.total_parcel_count) {
+              console.debug("setting offset");
+              this.offset += offset;
+          }
+          else {
+              console.debug("total_parcel_count reached!")
+              console.debug("total: "+this.total_parcel_count);
+              console.debug("offset: "+this.offset);
+          }
       }
       else {
-        console.debug("Min_offset reached!")
-        this.offset = 0;
-        console.debug(this.offset);
+          console.debug("Min_offset reached!")
+          this.offset = 0;
+          console.debug(this.offset);
       }
     },
     /* helper functions */
