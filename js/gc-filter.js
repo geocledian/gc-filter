@@ -1,8 +1,8 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-05-25, jsommer
- version: 0.6.4
+ last update: 2020-06-25, jsommer
+ version: 0.6.5
 */
 "use strict";
 
