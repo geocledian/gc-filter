@@ -69,7 +69,7 @@ Vue.component('gc-filter', {
     },
     gcApiBaseUrl: {
       type: String,
-      default: "/agknow/api/v3"
+      default: "/agknow/api/v4"
     },
     gcApiSecure: {
       type: Boolean,
@@ -89,7 +89,7 @@ Vue.component('gc-filter', {
     },
     gcAvailableFields: {
       type: String,
-      default: 'crop,name,entity,planting,harvest'
+      default: 'crop,name,entity,planting,harvest,userdata,promotion'
     },
     gcAvailableOptions: {
       type: String,
@@ -102,7 +102,7 @@ Vue.component('gc-filter', {
     gcLanguage: {
       type: String,
       default: 'en' // 'en' | 'de' | 'lt'
-    },
+    }
   },
   template: `<div :id="this.gcWidgetId" class="is-inline gc-filter">
 
@@ -207,6 +207,7 @@ Vue.component('gc-filter', {
         parcels: [],
         total_parcel_count: 0,
         promotion: undefined,
+        limit: 250,
         crop: "",
         entity: "",
         name: "",
@@ -266,6 +267,11 @@ Vue.component('gc-filter', {
         }
       }
     },
+    // promotion: {
+    //   get() {
+    //     return this.availableFields.includes('promotion');
+    //   }
+    // },
     filterString: {
       get: function () {
         // TODO offset + limit + paging
@@ -280,6 +286,7 @@ Vue.component('gc-filter', {
         if (this.apiMajorVersion === 4) {
           if (this.promotion) {
             filterStr += "&extended="+ JSON.parse(this.promotion);
+            filterStr += "&promotion=" + JSON.parse(this.promotion);
           }
           if (this.planting.length > 0) {
             filterStr += "&planting="+ this.planting;
@@ -401,7 +408,7 @@ Vue.component('gc-filter', {
                 protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key="+this.apiKey);
     },
     getParcelTotalCount: function (filterString) {
-
+      /* unused currently */ 
       const endpoint = "/parcels";
       let params;
 
@@ -429,9 +436,9 @@ Vue.component('gc-filter', {
             // minimum of 250
             if (this.total_parcel_count < this.pagingStep) {
               this.pagingStep = this.total_parcel_count;
-            } /*else {
+            } else {
               this.pagingStep = 250;
-            }*/
+            }
 
             if (this.total_parcel_count == 0) {
               return;
@@ -447,7 +454,8 @@ Vue.component('gc-filter', {
       xmlHttp.send();
     },
     getAllParcels: function (offset, filterString) {
-
+        /* unused currently */ 
+        
         //download in chunks of n parcels
         let limit = this.limit;
 
