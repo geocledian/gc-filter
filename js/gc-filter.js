@@ -15,8 +15,9 @@ const gcFilterLocales = {
       "entity": "Entity",
       "name": "Name",
       "promotion": "Promotion",
-      "planting": "Planting date",
-      "harvest": "Harvest date",
+      "planting": "Planting date after",
+      "harvest": "Harvest date before",
+      "date_format_hint" : "YYYY-MM-DD",
     },
     "buttons": { 
       "applyFilter": {
@@ -34,8 +35,9 @@ const gcFilterLocales = {
       "entity": "Entität",
       "name": "Name",
       "promotion": "Demo",
-      "planting": "Pflanzdatum",
-      "harvest": "Erntedatum",
+      "planting": "Pflanzdatum nach",
+      "harvest": "Erntedatum vor",
+      "date_format_hint" : "JJJJ-MM-TT",
     },
     "buttons": { 
       "applyFilter": {
@@ -138,13 +140,13 @@ Vue.component('gc-filter', {
                     <div class="gc-field" v-show="availableFields.includes('planting')">
                       <label class="label is-small gc-is-tertiary">{{$t('fields.planting')}}</label>
                       <div class="control">
-                        <input type="text" class="input is-small" :placeholder="$t('fields.planting')" v-model="planting">
+                        <input :id="'inpstartdate_' + gcWidgetId" type="text" class="input is-small" :placeholder="$t('fields.date_format_hint')" v-model="planting">
                       </div>
                     </div>
                     <div class="gc-field" v-show="availableFields.includes('harvest')">
                       <label class="label is-small gc-is-tertiary">{{$t('fields.harvest')}}</label>
                       <div class="control">
-                        <input type="text" class="input is-small" :placeholder="$t('fields.harvest')" v-model="harvest">
+                        <input :id="'inpenddate_' + gcWidgetId" type="text" class="input is-small" :placeholder="$t('fields.date_format_hint')" v-model="harvest">
                       </div>
                     </div>
                     <div class="gc-field" v-show="availableFields.includes('promotion')">
@@ -235,6 +237,36 @@ Vue.component('gc-filter', {
     console.debug("filter! - mounted()");
     // trigger update of map
     //this.applyFilter();
+
+    // init date pickers
+    this.startdateCalendar = new bulmaCalendar( document.getElementById( 'inpstartdate_'+this.gcWidgetId ), {
+      startDate: new Date(), // Date selected by default
+      dateFormat: 'yyyy-mm-dd', // the date format `field` value
+      lang: this.gcLanguage, // internationalization
+      overlay: false,
+      closeOnOverlayClick: true,
+      closeOnSelect: true,
+      // callback functions
+      onSelect: function (e) { 
+                  // hack +1 day
+                  var a = new Date(e.valueOf() + 1000*3600*24);
+                  this.planting = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+                  }.bind(this),
+    });
+    this.enddateCalendar = new bulmaCalendar( document.getElementById( 'inpenddate_'+this.gcWidgetId ), {
+      startDate: new Date(), // Date selected by default
+      dateFormat: 'yyyy-mm-dd', // the date format `field` value
+      lang: this.gcLanguage, // internationalization
+      overlay: false,
+      closeOnOverlayClick: true,
+      closeOnSelect: true,
+      // callback functions
+      onSelect: function (e) { 
+                  // hack +1 day
+                  var a = new Date(e.valueOf() + 1000*3600*24);
+                  this.harvest = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+                  }.bind(this),
+    });
   },
   computed: {
     apiKey: {
@@ -520,6 +552,8 @@ Vue.component('gc-filter', {
         this.entity = "";
         this.name = "";
         this.promotion = undefined;
+        this.planting = "";
+        this.harvest = "";
         this.offset = 0;
 
         this.pagingStep = this.limit;

@@ -77,12 +77,15 @@ Please contact [us](mailto:info@geocledian.com) from geocledian.com if you have 
 ## Used Libraries
 - [Vue.js](https://www.vuejs.org)
 - [Vue I18n](https://kazupon.github.io/vue-i18n/)
+- [axios](https://github.com/axios/axios)
+- [Bulma](https://bulma.io/documentation/)
+- [Font awesome](https://fontawesome.com/)
 
 ## Legal: Terms of use from third party data providers
 - You have to add the copyright information of the used data. At the time of writing the following text has to be visible for [Landsat](https://www.usgs.gov/information-policies-and-instructions/crediting-usgs) and [Sentinel](https://scihub.copernicus.eu/twiki/pub/SciHubWebPortal/TermsConditions/TC_Sentinel_Data_31072014.pdf) data:
 
 ```html
- contains Copernicus data 2020.
+ contains Copernicus data 2021.
  U.S. Geological Service Landsat 8 used in compiling this information.
 ```
 
