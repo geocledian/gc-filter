@@ -1,7 +1,7 @@
 /*
  Vue.js Geocledian filter component
  created:     2020-01-23, jsommer
- last update: 2020-06-25, jsommer
+ last update: 2020-10-10, jsommer
  version: 0.6.5
 */
 "use strict";
@@ -219,6 +219,8 @@ Vue.component('gc-filter', {
         selectedParcelId: -1,
         layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }},
         apiSecure: true,
+        startdateCalendar: undefined,
+        enddateCalendar: undefined,
     }
   },
   //init internationalization
@@ -239,34 +241,8 @@ Vue.component('gc-filter', {
     //this.applyFilter();
 
     // init date pickers
-    this.startdateCalendar = new bulmaCalendar( document.getElementById( 'inpstartdate_'+this.gcWidgetId ), {
-      startDate: new Date(), // Date selected by default
-      dateFormat: 'yyyy-mm-dd', // the date format `field` value
-      lang: this.gcLanguage, // internationalization
-      overlay: false,
-      closeOnOverlayClick: true,
-      closeOnSelect: true,
-      // callback functions
-      onSelect: function (e) { 
-                  // hack +1 day
-                  var a = new Date(e.valueOf() + 1000*3600*24);
-                  this.planting = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
-                  }.bind(this),
-    });
-    this.enddateCalendar = new bulmaCalendar( document.getElementById( 'inpenddate_'+this.gcWidgetId ), {
-      startDate: new Date(), // Date selected by default
-      dateFormat: 'yyyy-mm-dd', // the date format `field` value
-      lang: this.gcLanguage, // internationalization
-      overlay: false,
-      closeOnOverlayClick: true,
-      closeOnSelect: true,
-      // callback functions
-      onSelect: function (e) { 
-                  // hack +1 day
-                  var a = new Date(e.valueOf() + 1000*3600*24);
-                  this.harvest = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
-                  }.bind(this),
-    });
+    this.initDatePickers();
+
   },
   computed: {
     apiKey: {
@@ -415,6 +391,7 @@ Vue.component('gc-filter', {
       // },
       currentLanguage(newValue, oldValue) {
         this.changeLanguage();
+        this.initDatePickers();
       }
   },
   methods: {
@@ -586,6 +563,43 @@ Vue.component('gc-filter', {
           this.offset = 0;
           console.debug(this.offset);
       }
+    },
+    initDatePickers() {
+
+      if (this.startdateCalendar) {
+        this.startdateCalendar.destroy();
+      }
+      this.startdateCalendar = new bulmaCalendar( document.getElementById( 'inpstartdate_'+this.gcWidgetId ), {
+        startDate: new Date(), // Date selected by default
+        dateFormat: 'yyyy-mm-dd', // the date format `field` value
+        lang: this.currentLanguage, // internationalization
+        overlay: false,
+        closeOnOverlayClick: true,
+        closeOnSelect: true,
+        // callback functions
+        onSelect: function (e) { 
+                    // hack +1 day
+                    var a = new Date(e.valueOf() + 1000*3600*24);
+                    this.planting = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+                    }.bind(this),
+      });
+      if (this.enddateCalendar) {
+        this.enddateCalendar.destroy();
+      }
+      this.enddateCalendar = new bulmaCalendar( document.getElementById( 'inpenddate_'+this.gcWidgetId ), {
+        startDate: new Date(), // Date selected by default
+        dateFormat: 'yyyy-mm-dd', // the date format `field` value
+        lang: this.currentLanguage, // internationalization
+        overlay: false,
+        closeOnOverlayClick: true,
+        closeOnSelect: true,
+        // callback functions
+        onSelect: function (e) { 
+                    // hack +1 day
+                    var a = new Date(e.valueOf() + 1000*3600*24);
+                    this.harvest = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+                    }.bind(this),
+      });
     },
     /* helper functions */
     formatDecimal: function (decimal, numberOfDecimals) {
