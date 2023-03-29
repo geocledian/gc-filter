@@ -9,42 +9,68 @@
 //language strings
 const gcFilterLocales = {
   "en": {
-    "options": { "title": "Filter" },
-    "fields": { 
+    "options": {
+      "title": "Filter"
+    },
+    "fields": {
       "crop": "Crop",
       "entity": "Entity",
       "name": "Name",
       "promotion": "Promotion",
       "planting": "Planting date after",
       "harvest": "Harvest date before",
-      "date_format_hint" : "YYYY-MM-DD",
+      "date_format_hint": "YYYY-MM-DD",
     },
-    "buttons": { 
+    "buttons": {
       "applyFilter": {
         "title": "Apply Filter"
-      }, 
+      },
       "removeFilter": {
         "title": "Remove Filter"
       }
     }
   },
   "de": {
-    "options": { "title": "Filter" },
-    "fields": { 
+    "options": {
+      "title": "Filter"
+    },
+    "fields": {
       "crop": "Fruchtart",
       "entity": "Entität",
       "name": "Name",
       "promotion": "Demo",
       "planting": "Pflanzdatum nach",
       "harvest": "Erntedatum vor",
-      "date_format_hint" : "JJJJ-MM-TT",
+      "date_format_hint": "JJJJ-MM-TT",
     },
-    "buttons": { 
+    "buttons": {
       "applyFilter": {
         "title": "Filter anwenden"
-      }, 
+      },
       "removeFilter": {
         "title": "Filter entfernen"
+      }
+    }
+  },
+  "lt": {
+    "options": {
+      "title": "Filtruoti laukus"
+    },
+    "fields": {
+      "crop": "Pasėlis",
+      "entity": "Subjektas",
+      "name": "Pavadinimas",
+      "promotion": "Promotion",
+      "planting": "Planting date after",
+      "harvest": "Harvest date before",
+      "date_format_hint": "YYYY-MM-DD",
+    },
+    "buttons": {
+      "applyFilter": {
+        "title": "Filtruoti"
+      },
+      "removeFilter": {
+        "title": "Atšaukti filtravimą"
       }
     }
   },
@@ -58,12 +84,12 @@ Vue.component('gc-filter', {
       required: true
     },
     gcApikey: {
-        type: String,
-        default: '39553fb7-7f6f-4945-9b84-a4c8745bdbec'
+      type: String,
+      default: '39553fb7-7f6f-4945-9b84-a4c8745bdbec'
     },
     gcHost: {
-        type: String,
-        default: 'geocledian.com'
+      type: String,
+      default: 'geocledian.com'
     },
     gcProxy: {
       type: String,
@@ -76,7 +102,7 @@ Vue.component('gc-filter', {
     gcApiSecure: {
       type: Boolean,
       default: true
-    },      
+    },
     gcLimit: {
       type: Number,
       default: 250
@@ -206,21 +232,26 @@ Vue.component('gc-filter', {
   data: function () {
     console.debug("filter! - data()");
     return {
-        parcels: [],
-        total_parcel_count: 0,
-        promotion: undefined,
-        limit: 250,
-        crop: "",
-        entity: "",
-        name: "",
-        planting: "",
-        harvest: "",
-        currentParcel: undefined,
-        selectedParcelId: -1,
-        layoutCSSMap: { "alignment": {"vertical": "is-inline-block", "horizontal": "is-flex" }},
-        apiSecure: true,
-        startdateCalendar: undefined,
-        enddateCalendar: undefined,
+      parcels: [],
+      total_parcel_count: 0,
+      promotion: undefined,
+      limit: 250,
+      crop: "",
+      entity: "",
+      name: "",
+      planting: "",
+      harvest: "",
+      currentParcel: undefined,
+      selectedParcelId: -1,
+      layoutCSSMap: {
+        "alignment": {
+          "vertical": "is-inline-block",
+          "horizontal": "is-flex"
+        }
+      },
+      apiSecure: true,
+      startdateCalendar: undefined,
+      enddateCalendar: undefined,
     }
   },
   //init internationalization
@@ -246,27 +277,27 @@ Vue.component('gc-filter', {
   },
   computed: {
     apiKey: {
-        get: function () {
-            return this.gcApikey;
-        }
+      get: function () {
+        return this.gcApikey;
+      }
     },
     apiHost: {
-        get: function () {
-            return this.gcHost;
-        }
+      get: function () {
+        return this.gcHost;
+      }
     },
     apiBaseUrl: {
-        get: function () {
-            return this.gcApiBaseUrl;
+      get: function () {
+        return this.gcApiBaseUrl;
       }
     },
     apiSecure: {
       get: function () {
-          return this.gcApiSecure;
+        return this.gcApiSecure;
       }
     },
     apiMajorVersion: {
-      get () {
+      get() {
         if (this.apiBaseUrl === "/agknow/api/v3") {
           return 3
         }
@@ -283,24 +314,24 @@ Vue.component('gc-filter', {
     filterString: {
       get: function () {
         // TODO offset + limit + paging
-        let filterStr = "&crop="+this.crop +
-                        "&entity="+ this.entity+
-                        "&name="+ this.name;
+        let filterStr = "&crop=" + this.crop +
+          "&entity=" + this.entity +
+          "&name=" + this.name;
         if (this.apiMajorVersion === 3) {
           if (this.promotion) {
-            filterStr += "&promotion="+ JSON.parse(this.promotion);
+            filterStr += "&promotion=" + JSON.parse(this.promotion);
           }
         }
         if (this.apiMajorVersion === 4) {
           if (this.promotion) {
-            filterStr += "&extended="+ JSON.parse(this.promotion);
+            filterStr += "&extended=" + JSON.parse(this.promotion);
             filterStr += "&promotion=" + JSON.parse(this.promotion);
           }
           if (this.planting.length > 0) {
-            filterStr += "&planting="+ this.planting;
+            filterStr += "&planting=" + this.planting;
           }
           if (this.harvest.length > 0) {
-            filterStr += "&harvest="+ this.harvest;
+            filterStr += "&harvest=" + this.harvest;
           }
         }
         return filterStr;
@@ -333,11 +364,11 @@ Vue.component('gc-filter', {
     //   },
     // },
     offset: {
-      get: function() {
+      get: function () {
         // will always reflect prop's value 
         return this.gcOffset;
       },
-      set: function (newValue) {       
+      set: function (newValue) {
         //notify root - through props it will change this.gcOffset
         this.$root.$emit('offsetChange', newValue);
       }
@@ -348,51 +379,51 @@ Vue.component('gc-filter', {
       }
     },
     availableOptions: {
-      get: function() {
+      get: function () {
         return (this.gcAvailableOptions.split(","));
       }
     },
     currentLanguage: {
-      get: function() {
+      get: function () {
         // will always reflect prop's value 
         return this.gcLanguage;
       },
     }
   },
   watch: {
-      // parcelIds: function(newValue, oldValue) {
-      //   //propagate local parcel ids to root instance
-      //   //this.$root.selectedParcelIds = this.parcelIds;
-      // },
-      // parcels: function(newValue, oldValue) {
-      //   console.debug("parcels changed!");
-      //   //console.debug(oldValue);
-      //   //console.debug(newValue);
+    // parcelIds: function(newValue, oldValue) {
+    //   //propagate local parcel ids to root instance
+    //   //this.$root.selectedParcelIds = this.parcelIds;
+    // },
+    // parcels: function(newValue, oldValue) {
+    //   console.debug("parcels changed!");
+    //   //console.debug(oldValue);
+    //   //console.debug(newValue);
 
-      //   this.$root.$emit('parcelsChange', newValue);
+    //   this.$root.$emit('parcelsChange', newValue);
 
-      //   // set first parcel as current parcel
-      //   this.currentParcel = this.parcels[0];
-        
-      // },
-      filterString: function(newValue, oldValue) {
-        
-        console.debug("gc-filter - filterString");
+    //   // set first parcel as current parcel
+    //   this.currentParcel = this.parcels[0];
 
-        // would fire on any keyup event
-        // this.$root.$emit('filterStringChange', newValue);
-      },
-      // offset: function (newValue, oldValue) {
+    // },
+    filterString: function (newValue, oldValue) {
 
-      //   console.debug("gc-filter - offsetChange");
+      console.debug("gc-filter - filterString");
 
-      //   // trigger per change of filter to other listening components
-      //   // this.applyFilter();
-      // },
-      currentLanguage(newValue, oldValue) {
-        this.changeLanguage();
-        this.initDatePickers();
-      }
+      // would fire on any keyup event
+      // this.$root.$emit('filterStringChange', newValue);
+    },
+    // offset: function (newValue, oldValue) {
+
+    //   console.debug("gc-filter - offsetChange");
+
+    //   // trigger per change of filter to other listening components
+    //   // this.applyFilter();
+    // },
+    currentLanguage(newValue, oldValue) {
+      this.changeLanguage();
+      this.initDatePickers();
+    }
   },
   methods: {
     getApiUrl: function (endpoint) {
@@ -410,20 +441,20 @@ Vue.component('gc-filter', {
       // if (this.apiEncodeParams) {
       //   endpoint = encodeURIComponent(endpoint);
       // }
-      
+
       // with or without apikey depending on gcProxy property
-      return (this.gcProxy ? 
-                protocol + '://' + this.gcProxy + this.apiBaseUrl + endpoint  : 
-                protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key="+this.apiKey);
+      return (this.gcProxy ?
+        protocol + '://' + this.gcProxy + this.apiBaseUrl + endpoint :
+        protocol + '://' + this.gcHost + this.apiBaseUrl + endpoint + "?key=" + this.apiKey);
     },
     getParcelTotalCount: function (filterString) {
-      /* unused currently */ 
+      /* unused currently */
       const endpoint = "/parcels";
       let params;
 
       if (filterString) {
         params = filterString +
-                  "&count=True";
+          "&count=True";
       } else {
         params = "&count=True";
       }
@@ -463,105 +494,103 @@ Vue.component('gc-filter', {
       xmlHttp.send();
     },
     getAllParcels: function (offset, filterString) {
-        /* unused currently */ 
-        
-        //download in chunks of n parcels
-        let limit = this.limit;
+      /* unused currently */
 
-        const endpoint = "/parcels";
-        let params = "&limit=" + limit; //set limit to maximum (default 1000)
+      //download in chunks of n parcels
+      let limit = this.limit;
 
-        if (offset) {
-            params = params + "&offset=" + offset;
-        }
-        if (filterString) {
-            params = params + filterString;
-        }
+      const endpoint = "/parcels";
+      let params = "&limit=" + limit; //set limit to maximum (default 1000)
 
-        let xmlHttp = new XMLHttpRequest();
-        let async = true;
+      if (offset) {
+        params = params + "&offset=" + offset;
+      }
+      if (filterString) {
+        params = params + filterString;
+      }
 
-        //Show requests on the DEBUG console for developers
-        console.debug("getAllParcels()");
-        console.debug("GET " + this.getApiUrl(endpoint) + params);
+      let xmlHttp = new XMLHttpRequest();
+      let async = true;
 
-        xmlHttp.onreadystatechange = function () {
-          if (xmlHttp.readyState == 4) {
-              var tmp = JSON.parse(xmlHttp.responseText);
+      //Show requests on the DEBUG console for developers
+      console.debug("getAllParcels()");
+      console.debug("GET " + this.getApiUrl(endpoint) + params);
 
-              if (tmp.content == "key is not authorized") {
-                  return;
-              }
+      xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState == 4) {
+          var tmp = JSON.parse(xmlHttp.responseText);
 
-              this.parcels = [];
-
-              if (tmp.content.length == 0) {
-                  //clear details and map
-                  return;
-              }
-
-              for (var i = 0; i < tmp.content.length; i++) {
-                  var item = tmp.content[i];
-                  this.parcels.push(item);
-              }
+          if (tmp.content == "key is not authorized") {
+            return;
           }
-        }.bind(this);
-        xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
-        xmlHttp.send();
+
+          this.parcels = [];
+
+          if (tmp.content.length == 0) {
+            //clear details and map
+            return;
+          }
+
+          for (var i = 0; i < tmp.content.length; i++) {
+            var item = tmp.content[i];
+            this.parcels.push(item);
+          }
+        }
+      }.bind(this);
+      xmlHttp.open("GET", this.getApiUrl(endpoint) + params, async);
+      xmlHttp.send();
     },
     toggleFilter: function () {
       this.gcWidgetCollapsed = !this.gcWidgetCollapsed;
     },
     applyFilter: function () {
 
-        console.debug("applyFilter()");
-        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.add("is-active");
-       
-        // this.getParcelTotalCount(this.filterString);
+      console.debug("applyFilter()");
+      document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.add("is-active");
 
-        // update the paging & data
-        this.$root.$emit('filterStringChange', this.filterString);
+      // this.getParcelTotalCount(this.filterString);
+
+      // update the paging & data
+      this.$root.$emit('filterStringChange', this.filterString);
 
     },
     removeFilter: function () {
 
-        this.crop = "";
-        this.entity = "";
-        this.name = "";
-        this.promotion = undefined;
-        this.planting = "";
-        this.harvest = "";
-        this.offset = 0;
+      this.crop = "";
+      this.entity = "";
+      this.name = "";
+      this.promotion = undefined;
+      this.planting = "";
+      this.harvest = "";
+      this.offset = 0;
 
-        this.pagingStep = this.limit;
+      this.pagingStep = this.limit;
 
-        this.applyFilter();
+      this.applyFilter();
 
-        document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.remove("is-active");
+      document.getElementById(this.gcWidgetId + "_btnApplyFilter").classList.remove("is-active");
     },
-    setParcelPageOffset: function(offset) {
+    setParcelPageOffset: function (offset) {
 
-      console.debug("setParcelPageOffset() - change: "+ offset);
-      console.debug("setParcelPageOffset() - current val: "+this.offset);
+      console.debug("setParcelPageOffset() - change: " + offset);
+      console.debug("setParcelPageOffset() - current val: " + this.offset);
 
       let newOffset = this.offset + offset;
       if (newOffset >= 0) {
-          console.debug("new offset: "+ newOffset);
-          
-          if (newOffset <= this.total_parcel_count) {
-              console.debug("setting offset");
-              this.offset += offset;
-          }
-          else {
-              console.debug("total_parcel_count reached!")
-              console.debug("total: "+this.total_parcel_count);
-              console.debug("offset: "+this.offset);
-          }
-      }
-      else {
-          console.debug("Min_offset reached!")
-          this.offset = 0;
-          console.debug(this.offset);
+        console.debug("new offset: " + newOffset);
+
+        if (newOffset <= this.total_parcel_count) {
+          console.debug("setting offset");
+          this.offset += offset;
+        } else {
+          console.debug("total_parcel_count reached!")
+          console.debug("total: " + this.total_parcel_count);
+          console.debug("offset: " + this.offset);
+        }
+      } else {
+        console.debug("Min_offset reached!")
+        this.offset = 0;
+        console.debug(this.offset);
       }
     },
     initDatePickers() {
@@ -569,7 +598,7 @@ Vue.component('gc-filter', {
       if (this.startdateCalendar) {
         this.startdateCalendar.destroy();
       }
-      this.startdateCalendar = new bulmaCalendar( document.getElementById( 'inpstartdate_'+this.gcWidgetId ), {
+      this.startdateCalendar = new bulmaCalendar(document.getElementById('inpstartdate_' + this.gcWidgetId), {
         startDate: new Date(), // Date selected by default
         dateFormat: 'yyyy-mm-dd', // the date format `field` value
         lang: this.currentLanguage, // internationalization
@@ -577,16 +606,16 @@ Vue.component('gc-filter', {
         closeOnOverlayClick: true,
         closeOnSelect: true,
         // callback functions
-        onSelect: function (e) { 
-                    // hack +1 day
-                    var a = new Date(e.valueOf() + 1000*3600*24);
-                    this.planting = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
-                    }.bind(this),
+        onSelect: function (e) {
+          // hack +1 day
+          var a = new Date(e.valueOf() + 1000 * 3600 * 24);
+          this.planting = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+        }.bind(this),
       });
       if (this.enddateCalendar) {
         this.enddateCalendar.destroy();
       }
-      this.enddateCalendar = new bulmaCalendar( document.getElementById( 'inpenddate_'+this.gcWidgetId ), {
+      this.enddateCalendar = new bulmaCalendar(document.getElementById('inpenddate_' + this.gcWidgetId), {
         startDate: new Date(), // Date selected by default
         dateFormat: 'yyyy-mm-dd', // the date format `field` value
         lang: this.currentLanguage, // internationalization
@@ -594,11 +623,11 @@ Vue.component('gc-filter', {
         closeOnOverlayClick: true,
         closeOnSelect: true,
         // callback functions
-        onSelect: function (e) { 
-                    // hack +1 day
-                    var a = new Date(e.valueOf() + 1000*3600*24);
-                    this.harvest = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
-                    }.bind(this),
+        onSelect: function (e) {
+          // hack +1 day
+          var a = new Date(e.valueOf() + 1000 * 3600 * 24);
+          this.harvest = a.toISOString().split("T")[0]; //ISO String splits at T between date and time
+        }.bind(this),
       });
     },
     /* helper functions */
